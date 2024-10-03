@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface LectureApplicationRepository extends JpaRepository<LectureApplication, Long> {
 
-    @Query("SELECT COUNT(la) FROM LectureApplication la WHERE la.id = :lectureId")
+    @Query("SELECT COUNT(la) FROM LectureApplication la WHERE la.lectureId = :lectureId")
     int countByLectureId(@Param("lectureId") Long lectureId);
 }
