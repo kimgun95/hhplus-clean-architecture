@@ -54,8 +54,7 @@ class LectureApplicationIntegrationTest {
     }
 
     @Test
-    @DisplayName("동시에 40명이 수강신청을 시도하면 30명만 성공해야 한다")
-    void concurrentApplicationTest() throws InterruptedException {
+    void 동시다발적으로특강에신청이들어오면_정원만큼만성공하고나머진실패() throws InterruptedException {
         int numberOfThreads = 40;
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
@@ -87,18 +86,19 @@ class LectureApplicationIntegrationTest {
     }
 
     @Test
-    @DisplayName("이미 수강신청한 학생이 다시 신청하면 예외가 발생해야 한다")
-    void duplicateApplicationTest() {
+    void 특강에중복신청을한다면_에러발생() {
         String applicantId = "student1";
         LectureApplicationDto dto = new LectureApplicationDto(testLecture.getId(), applicantId);
 
         // 첫 번째 신청
         lectureService.applyForLecture(dto);
 
-        // 두 번째 신청
-        assertThrows(RestApiException.class, () -> {
-            lectureService.applyForLecture(dto);
-        });
+        // 2번째 ~ 5번째 신청 - 모두 실패해야 함
+        for (int i = 2; i <= 5; i++) {
+            assertThrows(RestApiException.class, () -> {
+                lectureService.applyForLecture(dto);
+            });
+        }
     }
 
 }
