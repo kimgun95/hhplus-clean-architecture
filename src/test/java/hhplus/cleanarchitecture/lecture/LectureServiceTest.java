@@ -70,10 +70,9 @@ class LectureServiceTest {
         }
 
         @Test
-        @DisplayName("정상적으로 특강을 신청할 수 있다")
         void 특강신청_성공() {
             // given
-            given(lectureRepository.findById(1L)).willReturn(Optional.of(lecture));
+            given(lectureRepository.findByIdWithPessimisticLock(1L)).willReturn(Optional.of(lecture));
             given(lectureApplicationRepository.countByLectureId(1L)).willReturn(0);
 
             // when
@@ -86,7 +85,7 @@ class LectureServiceTest {
         @Test
         void 존재하지않는특강에신청_에러발생() {
             // given
-            given(lectureRepository.findById(1L)).willReturn(Optional.empty());
+            given(lectureRepository.findByIdWithPessimisticLock(1L)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> sut.applyForLecture(lectureApplicationDto))
@@ -98,7 +97,7 @@ class LectureServiceTest {
         void 이미종료된특강에신청_에러발생() {
             // given
             Lecture expiredLecture = createLecture(1L, "종료된 강의", LocalDateTime.now().minusDays(1));
-            given(lectureRepository.findById(1L)).willReturn(Optional.of(expiredLecture));
+            given(lectureRepository.findByIdWithPessimisticLock(1L)).willReturn(Optional.of(expiredLecture));
 
             // when & then
             assertThatThrownBy(() -> sut.applyForLecture(lectureApplicationDto))
@@ -109,7 +108,7 @@ class LectureServiceTest {
         @Test
         void 정원초과된특강에신청_에러발생() {
             // given
-            given(lectureRepository.findById(1L)).willReturn(Optional.of(lecture));
+            given(lectureRepository.findByIdWithPessimisticLock(1L)).willReturn(Optional.of(lecture));
             given(lectureApplicationRepository.countByLectureId(1L)).willReturn(lecture.getLectureMaxParticipants());
 
             // when & then
@@ -121,7 +120,7 @@ class LectureServiceTest {
         @Test
         void 동일특강에중복신청_에러발생() {
             // given
-            given(lectureRepository.findById(1L)).willReturn(Optional.of(lecture));
+            given(lectureRepository.findByIdWithPessimisticLock(1L)).willReturn(Optional.of(lecture));
             given(lectureApplicationRepository.countByLectureId(1L)).willReturn(0);
             given(lectureApplicationRepository.save(any())).willThrow(new RuntimeException());
 
@@ -142,4 +141,3 @@ class LectureServiceTest {
                 .build();
     }
 }
-

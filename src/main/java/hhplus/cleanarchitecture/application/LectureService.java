@@ -32,7 +32,7 @@ public class LectureService {
         final Long lectureId = lectureApplicationDto.lectureId();
         final String applicantId = lectureApplicationDto.applicantId();
 
-        Lecture lecture = lectureRepository.findById(lectureId)
+        Lecture lecture = lectureRepository.findByIdWithPessimisticLock(lectureId)
                 .orElseThrow(() -> new RestApiException(LectureErrorCode.LECTURE_NOT_FOUND));
 
         // 이미 종료된 특강인지 확인
